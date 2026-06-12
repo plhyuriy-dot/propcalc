@@ -6,398 +6,582 @@
 <title>Prop Challenge Calculator</title>
 <style>
 :root {
-  --bg:       #f7f8fa;
-  --bg2:      #ffffff;
-  --bg3:      #f0f2f6;
-  --border:   #e2e5ec;
-  --border2:  #c8cdd9;
-  --text:     #1a1d26;
-  --text2:    #5a6177;
-  --text3:    #9aa0b4;
-  --green:    #0c7a4e;
-  --green-bg: #e6f7f0;
-  --green-bd: #a3d9bf;
-  --red:      #c0283c;
-  --red-bg:   #fdf0f2;
-  --red-bd:   #f0a8b2;
-  --amber:    #a05c00;
-  --amber-bg: #fdf5e6;
-  --amber-bd: #f0cc80;
-  --blue:     #1a5fbf;
-  --blue-bg:  #edf3fd;
-  --blue-bd:  #9dbcf0;
-  --mono: 'JetBrains Mono','Courier New',monospace;
-  --radius: 10px;
-  --shadow: 0 1px 3px rgba(0,0,0,.08), 0 0 0 1px rgba(0,0,0,.04);
+  --bg:#f7f8fa;--bg2:#ffffff;--bg3:#f0f2f6;--border:#e2e5ec;--border2:#c8cdd9;
+  --text:#1a1d26;--text2:#5a6177;--text3:#9aa0b4;
+  --green:#0c7a4e;--green-bg:#e6f7f0;--green-bd:#a3d9bf;
+  --red:#c0283c;--red-bg:#fdf0f2;--red-bd:#f0a8b2;
+  --amber:#a05c00;--amber-bg:#fdf5e6;--amber-bd:#f0cc80;
+  --blue:#1a5fbf;--blue-bg:#edf3fd;--blue-bd:#9dbcf0;
+  --shadow:0 1px 3px rgba(0,0,0,.08),0 0 0 1px rgba(0,0,0,.04);
+  --radius:10px;--fs:0.8125rem;
+}
+body.dark {
+  --bg:#0f1117;--bg2:#161b27;--bg3:#1e2535;--border:#2a3348;--border2:#3a4560;
+  --text:#e8eaf0;--text2:#8892a4;--text3:#55627a;
+  --green:#00d48a;--green-bg:#0a2d1e;--green-bd:#1a6644;
+  --red:#ff4d6d;--red-bg:#2d0a10;--red-bd:#8b2030;
+  --amber:#f0a500;--amber-bg:#2d1f00;--amber-bd:#8a5a00;
+  --blue:#4d9fff;--blue-bg:#0a1e3d;--blue-bd:#1a4a8a;
+  --shadow:0 1px 3px rgba(0,0,0,.3);
 }
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--bg);color:var(--text);font-family:-apple-system,'Inter',sans-serif;font-size:13px;line-height:1.5;min-height:100vh}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,'Inter',sans-serif;font-size:0.8125rem;line-height:1.5;transition:background .2s,color .2s;min-height:100vh}
+
+/* TOPBAR */
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:var(--bg2);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;gap:8px;flex-wrap:wrap}
+.topbar-left{display:flex;align-items:center;gap:8px}
+.app-title{font-weight:700;font-size:0.875rem;color:var(--text)}
+.nav-tabs{display:flex;gap:4px}
+.tab-btn{padding:5px 12px;border-radius:7px;border:1px solid var(--border);background:transparent;color:var(--text2);cursor:pointer;font-size:0.75rem;font-weight:500;transition:all .12s}
+.tab-btn.active{background:var(--blue-bg);border-color:var(--blue-bd);color:var(--blue)}
+.tab-btn:hover:not(.active){background:var(--bg3)}
+.topbar-right{display:flex;align-items:center;gap:6px}
+.icon-btn{padding:5px 9px;border-radius:7px;border:1px solid var(--border);background:transparent;color:var(--text2);cursor:pointer;font-size:0.8125rem;transition:all .12s;white-space:nowrap}
+.icon-btn:hover{background:var(--bg3);color:var(--text)}
+.icon-btn.active{background:var(--bg3);color:var(--text)}
+
+/* PAGES */
+.page{display:none}
+.page.active{display:block}
 
 /* LAYOUT */
-.layout{display:grid;grid-template-columns:310px 1fr;min-height:100vh;gap:0}
-.sidebar{background:var(--bg2);border-right:1px solid var(--border);padding:20px 16px;position:sticky;top:0;height:100vh;overflow-y:auto}
-.main{padding:20px 24px;overflow-x:hidden}
+.layout{display:grid;grid-template-columns:300px 1fr;min-height:calc(100vh - 48px)}
+.sidebar{background:var(--bg2);border-right:1px solid var(--border);padding:16px;position:sticky;top:48px;height:calc(100vh - 48px);overflow-y:auto}
+.main-area{padding:16px 20px;overflow-x:hidden}
 
-/* TYPOGRAPHY */
-.section-label{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:10px}
+/* SECTION LABEL */
+.slabel{font-size:0.625rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:8px;margin-top:2px}
 
 /* FIXED BLOCK */
-.fixed-block{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;margin-bottom:16px}
-.fixed-row{display:flex;justify-content:space-between;align-items:center;padding:3px 0;font-size:12px}
+.fixed-block{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:11px 13px;margin-bottom:14px}
+.fixed-row{display:flex;justify-content:space-between;align-items:center;padding:3px 0;font-size:0.75rem}
 .fixed-row span:first-child{color:var(--text2)}
-.fixed-row .val{font-family:var(--mono);font-weight:600;font-size:12px}
-.val.ok{color:var(--green)}.val.danger{color:var(--red)}.val.warn{color:var(--amber)}.val.blue{color:var(--blue)}
+.fval{font-family:'JetBrains Mono','Courier New',monospace;font-weight:600;font-size:0.6875rem}
+.fval.ok{color:var(--green)}.fval.danger{color:var(--red)}.fval.warn{color:var(--amber)}.fval.blue{color:var(--blue)}
 
 /* CONTROLS */
-.ctrl{margin-bottom:14px}
-.ctrl-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px}
-.ctrl-name{font-size:12px;color:var(--text2)}
-.ctrl-num{font-family:var(--mono);font-size:14px;font-weight:600;color:var(--text)}
+.ctrl{margin-bottom:12px}
+.ctrl-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px}
+.ctrl-name{font-size:0.75rem;color:var(--text2)}
+.ctrl-num{font-family:'JetBrains Mono','Courier New',monospace;font-size:0.8125rem;font-weight:600;color:var(--text)}
 input[type=range]{width:100%;height:3px;-webkit-appearance:none;background:var(--border);border-radius:2px;outline:none;cursor:pointer;display:block}
-input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:var(--blue);border:2px solid white;box-shadow:0 1px 3px rgba(0,0,0,.2);cursor:pointer}
-.ctrl-hint{font-size:10px;color:var(--text3);margin-top:4px}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:var(--blue);border:2px solid var(--bg2);box-shadow:0 1px 3px rgba(0,0,0,.2);cursor:pointer}
+.ctrl-hint{font-size:0.625rem;color:var(--text3);margin-top:3px}
+.num-row{display:flex;align-items:center;gap:6px}
+.num-row input[type=number]{width:100%;padding:6px 9px;border:1px solid var(--border);border-radius:7px;font-size:0.75rem;font-family:'JetBrains Mono','Courier New',monospace;background:var(--bg2);color:var(--text);outline:none;transition:border .12s}
+.num-row input[type=number]:focus{border-color:var(--blue-bd)}
+.num-row span{font-size:0.6875rem;color:var(--text3);white-space:nowrap}
+.divider{border:none;border-top:1px solid var(--border);margin:12px 0}
 
-/* NUMBER INPUT */
-.num-input-row{display:flex;align-items:center;gap:6px}
-.num-input-row input[type=number]{width:100%;padding:5px 8px;border:1px solid var(--border);border-radius:6px;font-size:12px;font-family:var(--mono);background:var(--bg2);color:var(--text);outline:none}
-.num-input-row input[type=number]:focus{border-color:var(--blue-bd)}
-.num-input-row span{font-size:11px;color:var(--text3);white-space:nowrap}
-
-.divider{border:none;border-top:1px solid var(--border);margin:14px 0}
-
-/* SEQUENCE */
-.seq-btns{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px}
-.btn{padding:5px 12px;border-radius:6px;border:1px solid var(--border);background:var(--bg3);color:var(--text2);cursor:pointer;font-size:11px;font-weight:500;transition:all .12s}
+/* SEQ BUILDER */
+.seq-btns{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:7px}
+.btn{padding:5px 11px;border-radius:6px;border:1px solid var(--border);background:var(--bg3);color:var(--text2);cursor:pointer;font-size:0.6875rem;font-weight:500;transition:all .12s}
 .btn:hover{border-color:var(--border2);color:var(--text)}
 .btn.win{background:var(--green-bg);border-color:var(--green-bd);color:var(--green)}
-.btn.win:hover{background:#d0f0e3}
 .btn.loss{background:var(--red-bg);border-color:var(--red-bd);color:var(--red)}
-.btn.loss:hover{background:#fadddf}
-.btn.sm{font-size:10px;padding:3px 8px}
-
-.presets{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:10px}
-.preset-btn{padding:3px 8px;border-radius:5px;border:1px solid var(--border);background:var(--bg2);color:var(--text3);cursor:pointer;font-size:10px;font-family:var(--mono);transition:all .12s}
+.btn.sm{font-size:0.625rem;padding:4px 9px}
+.presets{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px}
+.preset-btn{padding:3px 8px;border-radius:5px;border:1px solid var(--border);background:var(--bg2);color:var(--text3);cursor:pointer;font-size:0.625rem;font-family:'JetBrains Mono','Courier New',monospace;transition:all .12s}
 .preset-btn:hover{border-color:var(--blue-bd);color:var(--blue)}
-
-.seq-display{font-family:var(--mono);font-size:12px;letter-spacing:2px;padding:8px 10px;background:var(--bg3);border:1px solid var(--border);border-radius:7px;min-height:34px;word-break:break-all;line-height:1.9;color:var(--text)}
-.sq{font-weight:600}
-.sq.w{color:var(--green)}.sq.l{color:var(--red)}
+.seq-display{font-family:'JetBrains Mono','Courier New',monospace;font-size:0.75rem;letter-spacing:2px;padding:8px 10px;background:var(--bg3);border:1px solid var(--border);border-radius:7px;min-height:34px;word-break:break-all;line-height:1.9}
+.sq.w{color:var(--green);font-weight:700}.sq.l{color:var(--red);font-weight:700}
 
 /* STAT CARDS */
-.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin-bottom:16px}
-.scard{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;box-shadow:var(--shadow)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:7px;margin-bottom:14px}
+.scard{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:11px 13px;box-shadow:var(--shadow)}
 .scard.c-green{border-color:var(--green-bd);background:var(--green-bg)}
 .scard.c-red{border-color:var(--red-bd);background:var(--red-bg)}
 .scard.c-amber{border-color:var(--amber-bd);background:var(--amber-bg)}
-.slabel{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
-.sval{font-family:var(--mono);font-size:19px;font-weight:700}
-.sval.g{color:var(--green)}.sval.r{color:var(--red)}.sval.b{color:var(--blue)}.sval.a{color:var(--amber)}
-.ssub{font-size:10px;color:var(--text3);margin-top:2px}
+.sc-label{font-size:0.625rem;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px}
+.sc-val{font-family:'JetBrains Mono','Courier New',monospace;font-size:1.125rem;font-weight:700}
+.sc-val.g{color:var(--green)}.sc-val.r{color:var(--red)}.sc-val.b{color:var(--blue)}.sc-val.a{color:var(--amber)}
+.sc-sub{font-size:0.625rem;color:var(--text3);margin-top:2px}
 
 /* PROGRESS */
-.prog-wrap{margin-bottom:16px}
-.prog-labels{display:flex;justify-content:space-between;font-size:10px;color:var(--text3);margin-bottom:5px;font-family:var(--mono)}
+.prog-wrap{margin-bottom:14px}
+.prog-labels{display:flex;justify-content:space-between;font-size:0.625rem;color:var(--text3);margin-bottom:4px;font-family:'JetBrains Mono','Courier New',monospace}
 .prog-bar{height:6px;background:var(--bg3);border:1px solid var(--border);border-radius:3px;overflow:hidden}
 .prog-fill{height:100%;border-radius:3px;transition:width .3s,background .3s}
 
 /* ALERTS */
-.alert{padding:8px 12px;border-radius:7px;font-size:12px;margin-bottom:7px;display:flex;gap:8px;align-items:flex-start;border:1px solid}
+.alert{padding:8px 12px;border-radius:7px;font-size:0.75rem;margin-bottom:6px;display:flex;gap:8px;align-items:flex-start;border:1px solid}
 .alert.danger{background:var(--red-bg);border-color:var(--red-bd);color:var(--red)}
 .alert.warn{background:var(--amber-bg);border-color:var(--amber-bd);color:var(--amber)}
 .alert.info{background:var(--blue-bg);border-color:var(--blue-bd);color:var(--blue)}
-.alert-icon{font-weight:700;flex-shrink:0;font-size:13px}
+.alert-icon{font-weight:700;flex-shrink:0}
 
 /* TABLE */
-.table-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);margin-bottom:20px;background:var(--bg2)}
+.tbl-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);margin-bottom:18px;background:var(--bg2)}
 table{width:100%;border-collapse:collapse}
-thead th{font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);padding:9px 11px;text-align:left;border-bottom:1px solid var(--border);background:var(--bg3);white-space:nowrap}
+thead th{font-size:0.625rem;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);padding:9px 10px;text-align:left;border-bottom:1px solid var(--border);background:var(--bg3);white-space:nowrap}
 thead th.r{text-align:right}
 tbody tr{border-bottom:1px solid var(--border);transition:background .08s}
 tbody tr:last-child{border-bottom:none}
 tbody tr:hover{background:var(--bg3)}
-tbody tr.rpass{background:#e8f7f0}
-tbody tr.rpass:hover{background:#d6f0e6}
+tbody tr.rpass{background:var(--green-bg)}
+tbody tr.rpass:hover{background:#c6f0df}
 tbody tr.rblown{background:var(--red-bg)}
 tbody tr.rblown:hover{background:#fadde0}
 tbody tr.rlimit{background:var(--amber-bg)}
-tbody tr.rlimit:hover{background:#faefd0}
-td{padding:7px 11px;font-size:12px;white-space:nowrap}
+tbody tr.rcur{background:var(--blue-bg)}
+td{padding:7px 10px;font-size:0.75rem;white-space:nowrap}
 td.r{text-align:right}
-td.mono{font-family:var(--mono)}
-
-/* BADGES */
-.badge{display:inline-block;padding:1px 7px;border-radius:4px;font-size:10px;font-weight:600;font-family:var(--mono);border:1px solid}
+td.mono{font-family:'JetBrains Mono','Courier New',monospace}
+.badge{display:inline-block;padding:1px 7px;border-radius:4px;font-size:0.625rem;font-weight:600;font-family:'JetBrains Mono','Courier New',monospace;border:1px solid}
 .badge.bw{background:var(--green-bg);color:var(--green);border-color:var(--green-bd)}
 .badge.bl{background:var(--red-bg);color:var(--red);border-color:var(--red-bd)}
-.badge.funded{background:#c6f0df;color:#0a5e3a;border-color:var(--green-bd);font-size:11px}
-.badge.blown{background:var(--red-bg);color:var(--red);border-color:var(--red-bd);font-size:11px}
-.badge.blocked{background:var(--amber-bg);color:var(--amber);border-color:var(--amber-bd);font-size:9px}
-.badge.neutral{background:var(--bg3);color:var(--text3);border-color:var(--border);font-size:9px}
+.badge.funded{background:var(--green-bg);color:var(--green);border-color:var(--green-bd);font-size:0.6875rem}
+.badge.blown{background:var(--red-bg);color:var(--red);border-color:var(--red-bd);font-size:0.6875rem}
+.badge.blocked{background:var(--amber-bg);color:var(--amber);border-color:var(--amber-bd);font-size:0.5625rem}
+.badge.neutral{background:var(--bg3);color:var(--text3);border-color:var(--border);font-size:0.5625rem}
+.empty-state{text-align:center;padding:40px 20px;color:var(--text3);font-size:0.8125rem}
+.empty-icon{font-size:1.75rem;margin-bottom:8px;opacity:.4}
 
-/* REF TABLE */
-.ref-section{margin-top:4px}
+/* ===== PAGE 2: POSITION CALCULATOR ===== */
+.pos-layout{max-width:600px;margin:0 auto;padding:20px 16px}
+.pos-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);margin-bottom:16px}
+.pos-card-title{font-size:0.8125rem;font-weight:600;color:var(--text);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.pos-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.pos-field{display:flex;flex-direction:column;gap:4px}
+.pos-label{font-size:0.6875rem;color:var(--text2)}
+.pos-input{padding:9px 12px;border:1px solid var(--border);border-radius:8px;font-size:0.875rem;font-family:'JetBrains Mono','Courier New',monospace;background:var(--bg2);color:var(--text);outline:none;transition:border .12s;width:100%}
+.pos-input:focus{border-color:var(--blue-bd);box-shadow:0 0 0 3px rgba(77,159,255,.1)}
+.pos-input.error{border-color:var(--red-bd)}
+.pos-suffix{font-size:0.6875rem;color:var(--text3);margin-top:2px}
+.result-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:4px}
+.result-box{border-radius:9px;padding:16px;text-align:center;border:1px solid}
+.result-box.sl-box{background:var(--red-bg);border-color:var(--red-bd)}
+.result-box.tp-box{background:var(--green-bg);border-color:var(--green-bd)}
+.result-label{font-size:0.625rem;text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px;font-weight:600}
+.result-box.sl-box .result-label{color:var(--red)}
+.result-box.tp-box .result-label{color:var(--green)}
+.result-val{font-family:'JetBrains Mono','Courier New',monospace;font-size:1.375rem;font-weight:700}
+.result-box.sl-box .result-val{color:var(--red)}
+.result-box.tp-box .result-val{color:var(--green)}
+.result-sub{font-size:0.6875rem;color:var(--text3);margin-top:4px}
+.result-pct{font-family:'JetBrains Mono','Courier New',monospace;font-size:0.875rem;margin-top:3px}
+.result-box.sl-box .result-pct{color:var(--red)}
+.result-box.tp-box .result-pct{color:var(--green)}
+.metrics-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
+.metric{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:10px;text-align:center}
+.metric-label{font-size:0.625rem;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px}
+.metric-val{font-family:'JetBrains Mono','Courier New',monospace;font-size:0.9375rem;font-weight:700;color:var(--text)}
+.pos-hint{background:var(--blue-bg);border:1px solid var(--blue-bd);border-radius:8px;padding:10px 13px;font-size:0.75rem;color:var(--blue);margin-top:10px}
 
-::-webkit-scrollbar{width:6px;height:6px}
+/* MOBILE */
+@media(max-width:700px){
+  .layout{grid-template-columns:1fr;min-height:auto}
+  .sidebar{position:static;height:auto;border-right:none;border-bottom:1px solid var(--border)}
+  .main-area{padding:14px}
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .pos-grid{grid-template-columns:1fr}
+  .result-grid{grid-template-columns:1fr}
+  .metrics-row{grid-template-columns:repeat(3,1fr)}
+  .topbar{padding:8px 12px}
+  .app-title{font-size:0.8125rem}
+  .tab-btn{font-size:0.6875rem;padding:4px 10px}
+  .icon-btn{font-size:0.75rem;padding:4px 8px}
+}
+@media(max-width:400px){
+  .stats{grid-template-columns:1fr 1fr}
+  .metrics-row{grid-template-columns:1fr 1fr}
+  .topbar-right{gap:4px}
+}
+::-webkit-scrollbar{width:5px;height:5px}
 ::-webkit-scrollbar-track{background:var(--bg)}
 ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
-
-.empty-state{text-align:center;padding:48px 24px;color:var(--text3);font-size:13px}
-.empty-icon{font-size:32px;margin-bottom:10px;opacity:.4}
 </style>
 </head>
 <body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="topbar-left">
+    <span class="app-title">Prop Challenge Calculator</span>
+    <div class="nav-tabs">
+      <button class="tab-btn active" id="tab-challenge" onclick="switchPage('challenge')" data-ru="Челлендж" data-en="Challenge">Челлендж</button>
+      <button class="tab-btn" id="tab-position" onclick="switchPage('position')" data-ru="Позиция" data-en="Position">Позиция</button>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <button class="icon-btn" id="lang-btn" onclick="toggleLang()" title="Language">🌐 RU</button>
+    <button class="icon-btn" id="theme-btn" onclick="toggleTheme()" title="Theme">🌙</button>
+    <button class="icon-btn" onclick="changeFont(-1)" title="Decrease font">A−</button><button class="icon-btn" id="font-btn" onclick="changeFont(1)" title="Increase font">A+</button>
+  </div>
+</div>
+
+<!-- PAGE 1: CHALLENGE -->
+<div class="page active" id="page-challenge">
 <div class="layout">
-
-<!-- SIDEBAR -->
-<aside class="sidebar">
-  <div class="section-label">Условия челленджа</div>
-
-  <div class="fixed-block" id="conditions-block">
-    <div class="fixed-row"><span>Баланс старт</span><span class="val ok" id="lbl-bal">$100,000</span></div>
-    <div class="fixed-row"><span>Цель (+%)</span><span class="val ok" id="lbl-target">$110,000</span></div>
-    <div class="fixed-row"><span>Дневной DD</span><span class="val warn" id="lbl-ddday">3% от баланса дня</span></div>
-    <div class="fixed-row"><span>Общий DD (мин баланс)</span><span class="val danger" id="lbl-ddabs">$94,000</span></div>
-    <div class="fixed-row"><span>Макс потерь в день</span><span class="val blue" id="lbl-maxday">2 сделки</span></div>
-  </div>
-
-  <div class="section-label">Параметры счёта</div>
-
-  <div class="ctrl">
-    <div class="ctrl-top"><span class="ctrl-name">Начальный баланс</span></div>
-    <div class="num-input-row">
-      <input type="number" id="balance" value="100000" min="1000" max="500000" step="5000">
-      <span>$</span>
+  <aside class="sidebar">
+    <div class="slabel" data-ru="Условия челленджа" data-en="Challenge Conditions">Условия челленджа</div>
+    <div class="fixed-block">
+      <div class="fixed-row"><span data-ru="Баланс старт" data-en="Starting Balance"></span><span class="fval ok" id="lbl-bal">$100,000</span></div>
+      <div class="fixed-row"><span data-ru="Цель" data-en="Target"></span><span class="fval ok" id="lbl-target">$110,000</span></div>
+      <div class="fixed-row"><span data-ru="Дневной DD" data-en="Daily DD"></span><span class="fval warn" id="lbl-ddday">3%</span></div>
+      <div class="fixed-row"><span data-ru="Мин баланс" data-en="Min Balance"></span><span class="fval danger" id="lbl-ddabs">$94,000</span></div>
+      <div class="fixed-row"><span data-ru="Макс потерь/день" data-en="Max losses/day"></span><span class="fval blue" id="lbl-maxday">2</span></div>
     </div>
-  </div>
 
-  <div class="ctrl">
-    <div class="ctrl-top"><span class="ctrl-name">Цель</span><span class="ctrl-num" id="goal-val">+10%</span></div>
-    <input type="range" id="goal" min="5" max="20" step="1" value="10">
-    <div class="ctrl-hint" id="goal-hint"></div>
-  </div>
-
-  <div class="ctrl">
-    <div class="ctrl-top"><span class="ctrl-name">Дневной DD лимит</span><span class="ctrl-num" id="ddday-val">3%</span></div>
-    <input type="range" id="ddday" min="1" max="10" step="0.5" value="3">
-    <div class="ctrl-hint" id="ddday-hint">считается от баланса на начало каждого дня</div>
-  </div>
-
-  <div class="ctrl">
-    <div class="ctrl-top"><span class="ctrl-name">Общий DD (мин баланс)</span><span class="ctrl-num" id="ddabs-val">$94,000</span></div>
-    <div class="num-input-row">
-      <input type="number" id="ddabs" value="94000" min="0" max="99000" step="1000">
-      <span>$</span>
+    <div class="slabel" data-ru="Параметры счёта" data-en="Account Parameters">Параметры счёта</div>
+    <div class="ctrl">
+      <div class="ctrl-top"><span class="ctrl-name" data-ru="Начальный баланс" data-en="Starting Balance">Начальный баланс</span></div>
+      <div class="num-row"><input type="number" id="balance" value="100000" min="1000" max="1000000" step="5000"><span>$</span></div>
     </div>
-    <div class="ctrl-hint" id="ddabs-hint"></div>
-  </div>
-
-  <div class="divider"></div>
-
-  <div class="section-label">Торговые параметры</div>
-
-  <div class="ctrl">
-    <div class="ctrl-top"><span class="ctrl-name">Риск на сделку</span><span class="ctrl-num" id="risk-val">1.3%</span></div>
-    <input type="range" id="risk" min="0.3" max="5" step="0.1" value="1.3">
-    <div class="ctrl-hint" id="risk-hint"></div>
-  </div>
-
-  <div class="ctrl">
-    <div class="ctrl-top"><span class="ctrl-name">RR (тейк / стоп)</span><span class="ctrl-num" id="rr-val">3:1</span></div>
-    <input type="range" id="rr" min="0.5" max="6" step="0.5" value="3">
-    <div class="ctrl-hint" id="rr-hint"></div>
-  </div>
-
-  <div class="divider"></div>
-
-  <div class="section-label">Последовательность сделок</div>
-  <div class="seq-btns">
-    <button class="btn win" onclick="addTrade('W')">+ WIN</button>
-    <button class="btn loss" onclick="addTrade('L')">+ LOSS</button>
-    <button class="btn sm" onclick="removeLast()">← отмена</button>
-    <button class="btn sm" onclick="clearSeq()">очистить</button>
-  </div>
-  <div class="presets">
-    <button class="preset-btn" onclick="ap('WW')">WW</button>
-    <button class="preset-btn" onclick="ap('WWW')">WWW</button>
-    <button class="preset-btn" onclick="ap('WWWW')">WWWW</button>
-    <button class="preset-btn" onclick="ap('LL')">LL</button>
-    <button class="preset-btn" onclick="ap('LLL')">LLL</button>
-    <button class="preset-btn" onclick="ap('WLWL')">WLWL</button>
-    <button class="preset-btn" onclick="ap('WWLWWL')">WWLWWL</button>
-    <button class="preset-btn" onclick="ap('LLWLLW')">LLWLLW</button>
-    <button class="preset-btn" onclick="ap('LLLWWW')">LLLWWW</button>
-    <button class="preset-btn" onclick="ap('WWWLLL')">WWWLLL</button>
-    <button class="preset-btn" onclick="ap('LWWLWW')">LWWLWW</button>
-  </div>
-  <div class="seq-display" id="seq-display"><span style="color:var(--text3)">нет сделок</span></div>
-</aside>
-
-<!-- MAIN -->
-<main class="main">
-  <div class="section-label">Симуляция</div>
-  <div class="stats" id="stats"></div>
-  <div class="prog-wrap" id="prog-wrap" style="display:none">
-    <div class="prog-labels">
-      <span id="prog-left"></span>
-      <span id="prog-pct"></span>
-      <span id="prog-right"></span>
+    <div class="ctrl">
+      <div class="ctrl-top"><span class="ctrl-name" data-ru="Цель" data-en="Target">Цель</span><span class="ctrl-num" id="goal-val">+10%</span></div>
+      <input type="range" id="goal" min="5" max="20" step="1" value="10">
+      <div class="ctrl-hint" id="goal-hint"></div>
     </div>
-    <div class="prog-bar"><div class="prog-fill" id="prog-fill"></div></div>
-  </div>
-  <div id="alerts" style="margin-bottom:8px"></div>
+    <div class="ctrl">
+      <div class="ctrl-top"><span class="ctrl-name" data-ru="Дневной DD%" data-en="Daily DD%">Дневной DD%</span><span class="ctrl-num" id="ddday-val">3%</span></div>
+      <input type="range" id="ddday" min="1" max="10" step="0.5" value="3">
+      <div class="ctrl-hint" id="ddday-hint" data-ru="от баланса начала дня" data-en="from day start balance">от баланса начала дня</div>
+    </div>
+    <div class="ctrl">
+      <div class="ctrl-top"><span class="ctrl-name" data-ru="Мин баланс (общий DD)" data-en="Min Balance (Total DD)">Мин баланс (общий DD)</span><span class="ctrl-num" id="ddabs-val">$94k</span></div>
+      <div class="num-row"><input type="number" id="ddabs" value="94000" min="0" max="99000" step="1000"><span>$</span></div>
+      <div class="ctrl-hint" id="ddabs-hint"></div>
+    </div>
+    <div class="divider"></div>
 
-  <div class="section-label">День за днём</div>
-  <div class="table-wrap" id="day-wrap">
-    <div class="empty-state"><div class="empty-icon">📊</div>Добавь сделки слева чтобы запустить симуляцию</div>
-  </div>
+    <div class="slabel" data-ru="Торговые параметры" data-en="Trading Parameters">Торговые параметры</div>
+    <div class="ctrl">
+      <div class="ctrl-top"><span class="ctrl-name" data-ru="Риск на сделку" data-en="Risk per trade">Риск на сделку</span><span class="ctrl-num" id="risk-val">1.3%</span></div>
+      <input type="range" id="risk" min="0.3" max="5" step="0.1" value="1.3">
+      <div class="ctrl-hint" id="risk-hint"></div>
+    </div>
+    <div class="ctrl">
+      <div class="ctrl-top"><span class="ctrl-name" data-ru="RR (тейк/стоп)" data-en="RR (take/stop)">RR (тейк/стоп)</span><span class="ctrl-num" id="rr-val">3:1</span></div>
+      <input type="range" id="rr" min="0.5" max="6" step="0.5" value="3">
+      <div class="ctrl-hint" id="rr-hint"></div>
+    </div>
+    <div class="divider"></div>
 
-  <div class="ref-section">
-    <div class="section-label">Справка: все RR при текущих параметрах</div>
-    <div class="table-wrap">
+    <div class="slabel" data-ru="Последовательность сделок" data-en="Trade Sequence">Последовательность сделок</div>
+    <div class="seq-btns">
+      <button class="btn win" onclick="addTrade('W')" data-ru="+ WIN" data-en="+ WIN">+ WIN</button>
+      <button class="btn loss" onclick="addTrade('L')" data-ru="+ LOSS" data-en="+ LOSS">+ LOSS</button>
+      <button class="btn sm" onclick="removeLast()" data-ru="← отмена" data-en="← undo">← отмена</button>
+      <button class="btn sm" onclick="clearSeq()" data-ru="очистить" data-en="clear">очистить</button>
+    </div>
+    <div class="presets">
+      <button class="preset-btn" onclick="ap('WW')">WW</button>
+      <button class="preset-btn" onclick="ap('WWW')">WWW</button>
+      <button class="preset-btn" onclick="ap('WWWW')">WWWW</button>
+      <button class="preset-btn" onclick="ap('LL')">LL</button>
+      <button class="preset-btn" onclick="ap('LLL')">LLL</button>
+      <button class="preset-btn" onclick="ap('WLWL')">WLWL</button>
+      <button class="preset-btn" onclick="ap('WWLWWL')">WWLWWL</button>
+      <button class="preset-btn" onclick="ap('LLWLLW')">LLWLLW</button>
+      <button class="preset-btn" onclick="ap('LLLWWW')">LLLWWW</button>
+      <button class="preset-btn" onclick="ap('LWWLWW')">LWWLWW</button>
+    </div>
+    <div class="seq-display" id="seq-display"></div>
+  </aside>
+
+  <main class="main-area">
+    <div class="slabel" data-ru="Результаты симуляции" data-en="Simulation Results">Результаты симуляции</div>
+    <div class="stats" id="stats"></div>
+    <div class="prog-wrap" id="prog-wrap" style="display:none">
+      <div class="prog-labels"><span id="prog-left"></span><span id="prog-pct"></span><span id="prog-right"></span></div>
+      <div class="prog-bar"><div class="prog-fill" id="prog-fill"></div></div>
+    </div>
+    <div id="alerts" style="margin-bottom:8px"></div>
+    <div class="slabel" id="days-label" data-ru="День за днём" data-en="Day by Day">День за днём</div>
+    <div class="tbl-wrap" id="day-wrap">
+      <div class="empty-state"><div class="empty-icon">📊</div><span data-ru="Добавь сделки слева" data-en="Add trades on the left">Добавь сделки слева</span></div>
+    </div>
+    <div class="slabel" data-ru="Справка по RR" data-en="RR Reference">Справка по RR</div>
+    <div class="tbl-wrap">
       <table>
-        <thead>
-          <tr>
-            <th>RR</th>
-            <th class="r">Тейк</th>
-            <th class="r">Побед до цели</th>
-            <th class="r">Потерь до мин DD</th>
-            <th class="r">Макс потерь/день</th>
-            <th>Оценка</th>
-          </tr>
-        </thead>
+        <thead><tr>
+          <th>RR</th>
+          <th class="r" id="th-take" data-ru="Тейк" data-en="Take Profit">Тейк</th>
+          <th class="r" id="th-wins" data-ru="Побед до цели" data-en="Wins to target">Побед до цели</th>
+          <th class="r" id="th-losses" data-ru="Потерь до DD" data-en="Losses to DD">Потерь до DD</th>
+          <th class="r" id="th-maxday" data-ru="Макс/день" data-en="Max/day">Макс/день</th>
+          <th id="th-note" data-ru="Оценка" data-en="Rating">Оценка</th>
+        </tr></thead>
         <tbody id="ref-tbody"></tbody>
       </table>
     </div>
+  </main>
+</div>
+</div>
+
+<!-- PAGE 2: POSITION CALCULATOR -->
+<div class="page" id="page-position">
+<div class="pos-layout">
+  <div class="pos-card">
+    <div class="pos-card-title">🎯 <span data-ru="Расчёт позиции" data-en="Position Calculator">Расчёт позиции</span></div>
+    <div class="pos-grid">
+      <div class="pos-field">
+        <label class="pos-label" data-ru="Баланс счёта" data-en="Account Balance">Баланс счёта</label>
+        <input class="pos-input" type="number" id="pos-balance" value="100000" min="100" step="1000" oninput="calcPos()">
+        <span class="pos-suffix">$</span>
+      </div>
+      <div class="pos-field">
+        <label class="pos-label" data-ru="Риск на сделку" data-en="Risk per Trade">Риск на сделку</label>
+        <input class="pos-input" type="number" id="pos-risk" value="1.3" min="0.1" max="10" step="0.1" oninput="calcPos()">
+        <span class="pos-suffix">%</span>
+      </div>
+      <div class="pos-field">
+        <label class="pos-label" data-ru="RR (тейк / стоп)" data-en="RR (take / stop)">RR (тейк / стоп)</label>
+        <input class="pos-input" type="number" id="pos-rr" value="3" min="0.1" max="20" step="0.5" oninput="calcPos()">
+        <span class="pos-suffix" data-ru="соотношение" data-en="ratio">соотношение</span>
+      </div>
+      <div class="pos-field">
+        <label class="pos-label" data-ru="Цена входа" data-en="Entry Price">Цена входа</label>
+        <input class="pos-input" type="number" id="pos-entry" value="1.0850" min="0" step="0.0001" oninput="calcPos()">
+        <span class="pos-suffix" data-ru="необязательно" data-en="optional">необязательно</span>
+      </div>
+    </div>
   </div>
-</main>
+
+  <div class="pos-card">
+    <div class="pos-card-title">📊 <span data-ru="Результат" data-en="Result">Результат</span></div>
+    <div class="result-grid">
+      <div class="result-box sl-box">
+        <div class="result-label">Stop Loss (SL)</div>
+        <div class="result-val" id="res-sl-usd">—</div>
+        <div class="result-pct" id="res-sl-pct">—</div>
+        <div class="result-sub" id="res-sl-price">—</div>
+      </div>
+      <div class="result-box tp-box">
+        <div class="result-label">Take Profit (TP)</div>
+        <div class="result-val" id="res-tp-usd">—</div>
+        <div class="result-pct" id="res-tp-pct">—</div>
+        <div class="result-sub" id="res-tp-price">—</div>
+      </div>
+    </div>
+    <div class="metrics-row">
+      <div class="metric">
+        <div class="metric-label" data-ru="RR итого" data-en="Net RR">RR итого</div>
+        <div class="metric-val" id="met-rr">3:1</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label" data-ru="Риск $" data-en="Risk $">Риск $</div>
+        <div class="metric-val" id="met-risk">—</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label" data-ru="Прибыль $" data-en="Profit $">Прибыль $</div>
+        <div class="metric-val" id="met-profit">—</div>
+      </div>
+    </div>
+    <div class="pos-hint" id="pos-hint"></div>
+  </div>
+
+  <div class="pos-card">
+    <div class="pos-card-title">📋 <span data-ru="Таблица сценариев" data-en="Scenarios Table">Таблица сценариев</span></div>
+    <div class="tbl-wrap" style="margin-bottom:0;box-shadow:none;border:none">
+      <table>
+        <thead><tr>
+          <th data-ru="Риск %" data-en="Risk %">Риск %</th>
+          <th class="r" data-ru="SL ($)" data-en="SL ($)">SL ($)</th>
+          <th class="r" data-ru="TP ($)" data-en="TP ($)">TP ($)</th>
+          <th class="r" data-ru="SL цена" data-en="SL price">SL цена</th>
+          <th class="r" data-ru="TP цена" data-en="TP price">TP цена</th>
+        </tr></thead>
+        <tbody id="pos-scenarios"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
 </div>
 
 <script>
-let sequence = [];
-const $=id=>document.getElementById(id);
+// ===== STATE =====
+let sequence=[];
+let lang='ru';
+let darkMode=false;
+let fontSize=13;
 
-function addTrade(t){sequence.push(t);update()}
+const $=id=>document.getElementById(id);
+const fmtMoney=v=>'$'+Math.round(v).toLocaleString('en');
+const fmtPct=(v,d=2)=>(v>=0?'+':'')+v.toFixed(d)+'%';
+
+// ===== LANG =====
+const T={
+  ru:{
+    'no-trades':'нет сделок',
+    'add-trades':'Добавь сделки слева',
+    'funded':'FUNDED',
+    'blown':'BLOWN',
+    'in-progress':'В процессе',
+    'days':'дн.',
+    'blown-on':'blown день',
+    'days-label':'дней',
+    'sl-label':'Риск (убыток)',
+    'tp-label':'Цель (прибыль)',
+    'ev':'EV за сделку',
+    'optimal':'оптимально',
+    'many-trades':'много сделок',
+    'too-risky':'риск > DD',
+    'ok':'норм',
+    'wins-left':'побед для цели',
+    'blocked-msg':'сделок заблокировано дневным DD',
+    'pos-hint-pre':'При балансе',
+    'pos-hint-mid':'и риске',
+    'pos-hint-suf':'% — максимальный убыток:',
+    'dd-limit-msg':'лимит исчерпан',
+    'goal-hint-pre':'цель:',
+    'wins-needed':'побед',
+    'note-optimal':'оптимально',
+    'note-many':'много сделок',
+    'note-risky':'риск > DD лимита',
+    'note-ok':'норм',
+  },
+  en:{
+    'no-trades':'no trades',
+    'add-trades':'Add trades on the left',
+    'funded':'FUNDED',
+    'blown':'BLOWN',
+    'in-progress':'In progress',
+    'days':'d.',
+    'blown-on':'blown day',
+    'days-label':'days',
+    'sl-label':'Risk (loss)',
+    'tp-label':'Target (profit)',
+    'ev':'EV per trade',
+    'optimal':'optimal',
+    'many-trades':'too many trades',
+    'too-risky':'risk > DD',
+    'ok':'ok',
+    'wins-left':'wins to target',
+    'blocked-msg':'trades blocked by daily DD',
+    'pos-hint-pre':'Balance',
+    'pos-hint-mid':'risk',
+    'pos-hint-suf':'% — max loss:',
+    'dd-limit-msg':'limit reached',
+    'goal-hint-pre':'target:',
+    'wins-needed':'wins',
+    'note-optimal':'optimal',
+    'note-many':'too many trades',
+    'note-risky':'risk > DD limit',
+    'note-ok':'ok',
+  }
+};
+function t(key){return(T[lang]||T.ru)[key]||key}
+
+function toggleLang(){
+  lang=lang==='ru'?'en':'ru';
+  $('lang-btn').textContent='🌐 '+lang.toUpperCase();
+  document.querySelectorAll('[data-ru]').forEach(el=>{
+    const key=el.getAttribute('data-'+lang);
+    if(key) el.textContent=key;
+  });
+  update();calcPos();
+}
+
+// ===== THEME =====
+function toggleTheme(){
+  darkMode=!darkMode;
+  document.body.classList.toggle('dark',darkMode);
+  $('theme-btn').textContent=darkMode?'☀️':'🌙';
+}
+
+// ===== FONT =====
+function changeFont(dir){
+  fontSize=Math.max(10,Math.min(fontSize+dir,22));
+  document.documentElement.style.fontSize=fontSize+'px';
+  $('font-btn').textContent='A+ ('+fontSize+')';
+}
+
+// ===== PAGES =====
+function switchPage(name){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  $('page-'+name).classList.add('active');
+  $('tab-'+name).classList.add('active');
+}
+
+// ===== CHALLENGE CALC =====
+function addTrade(tt){sequence.push(tt);update()}
 function ap(s){sequence=[...sequence,...s.split('')];update()}
 function removeLast(){sequence.pop();update()}
 function clearSeq(){sequence=[];update()}
 
-function fmtMoney(v){return '$'+Math.round(v).toLocaleString('en')}
-function fmtPct(v,d=2){return(v>=0?'+':'')+v.toFixed(d)+'%'}
-function r2(v){return Math.round(v*100)/100}
-
-function getParams(){
-  return {
-    bal0:   Math.max(1000, +$('balance').value || 100000),
-    goalPct:+$('goal').value,
-    ddDay:  +$('ddday').value,
-    ddAbs:  Math.max(0, +$('ddabs').value || 94000),
-    risk:   +$('risk').value,
-    rr:     +$('rr').value,
-  }
-}
-
 function update(){
-  const p = getParams();
-  const {bal0,goalPct,ddDay,ddAbs,risk,rr} = p;
-  const target = bal0 * (1 + goalPct/100);
-  const winPct = risk * rr;
-  const lossPct = risk;
-  const maxPerDay = Math.floor(ddDay / lossPct);
-  const winsNeeded = Math.ceil(Math.log(target/bal0)/Math.log(1+winPct/100));
-  const lossesBlown = Math.floor(Math.log(ddAbs/bal0)/Math.log(1-lossPct/100));
+  const bal0=Math.max(1000,+$('balance').value||100000);
+  const goalPct=+$('goal').value;
+  const ddDay=+$('ddday').value;
+  const ddAbs=Math.max(0,+$('ddabs').value||94000);
+  const risk=+$('risk').value;
+  const rr=+$('rr').value;
+  const target=bal0*(1+goalPct/100);
+  const winPct=risk*rr;
+  const lossPct=risk;
+  const maxPerDay=Math.floor(ddDay/lossPct);
+  const winsNeeded=Math.ceil(Math.log(target/bal0)/Math.log(1+winPct/100));
+  const lossesBlown=Math.floor(Math.log(ddAbs/bal0)/Math.log(1-lossPct/100));
 
-  // update labels
-  $('goal-val').textContent = '+'+goalPct+'%';
-  $('ddday-val').textContent = ddDay+'%';
-  $('ddabs-val').textContent = fmtMoney(ddAbs);
-  $('risk-val').textContent = risk.toFixed(1)+'%';
-  $('rr-val').textContent = rr+':1';
+  $('goal-val').textContent='+'+goalPct+'%';
+  $('ddday-val').textContent=ddDay+'%';
+  $('ddabs-val').textContent='$'+Math.round(ddAbs/1000)+'k';
+  $('risk-val').textContent=risk.toFixed(1)+'%';
+  $('rr-val').textContent=rr+':1';
+  $('lbl-bal').textContent=fmtMoney(bal0);
+  $('lbl-target').textContent=fmtMoney(target)+' (+'+goalPct+'%)';
+  $('lbl-ddday').textContent=ddDay+'%';
+  $('lbl-ddabs').textContent=fmtMoney(ddAbs);
+  $('lbl-maxday').textContent=maxPerDay;
+  $('goal-hint').textContent=t('goal-hint-pre')+' '+fmtMoney(target);
+  $('risk-hint').textContent=(lang==='ru'?'стоп':'stop')+': '+lossPct.toFixed(1)+'% | '+(lang==='ru'?'тейк':'take')+': '+winPct.toFixed(1)+'% | '+winsNeeded+' '+t('wins-needed');
+  $('rr-hint').textContent=(lang==='ru'?'выдержит':'survives')+' '+lossesBlown+' '+(lang==='ru'?'потерь подряд':'losses before DD');
+  $('ddabs-hint').textContent=(100-(ddAbs/bal0*100)).toFixed(1)+'% '+(lang==='ru'?'просадка от старта':'drawdown from start');
 
-  $('lbl-bal').textContent = fmtMoney(bal0);
-  $('lbl-target').textContent = fmtMoney(target)+' (+'+goalPct+'%)';
-  $('lbl-ddday').textContent = ddDay+'% от баланса дня';
-  $('lbl-ddabs').textContent = fmtMoney(ddAbs);
-  $('lbl-maxday').textContent = maxPerDay+' '+(maxPerDay===1?'сделка':maxPerDay<5?'сделки':'сделок');
-
-  $('goal-hint').textContent = 'цель: '+fmtMoney(target);
-  $('ddday-hint').textContent = 'считается от баланса на начало каждого дня';
-  $('risk-hint').textContent = 'стоп: '+lossPct.toFixed(1)+'% | тейк: '+winPct.toFixed(1)+'% | нужно '+winsNeeded+' побед';
-  $('rr-hint').textContent = 'выдержит '+lossesBlown+' потерь до мин DD';
-  $('ddabs-hint').textContent = 'это '+(100-(ddAbs/bal0*100)).toFixed(1)+'% просадка от старта';
-
-  // sequence display
+  // seq display
   if(sequence.length===0){
-    $('seq-display').innerHTML='<span style="color:var(--text3)">нет сделок</span>';
+    $('seq-display').innerHTML='<span style="color:var(--text3)">'+t('no-trades')+'</span>';
   } else {
-    $('seq-display').innerHTML=sequence.map(t=>`<span class="sq ${t==='W'?'w':'l'}">${t}</span>`).join(' ');
+    $('seq-display').innerHTML=sequence.map(tt=>`<span class="sq ${tt==='W'?'w':'l'}">${tt}</span>`).join(' ');
   }
 
-  // --- SIMULATION ---
-  let bal = bal0;
-  let days = [];
-  let dayTrades = [];
-  let dayStartBal = bal0;
-  let dayLossAmt = 0;
-  let blown=false, passed=false;
-  let totalW=0, totalL=0, totalBlocked=0;
+  // simulate
+  let bal=bal0,days=[],dayTrades=[],dayStartBal=bal0,dayLossAmt=0;
+  let blown=false,passed=false,totalW=0,totalL=0,totalBlocked=0;
 
   function flushDay(status){
-    const dayPnl = bal - dayStartBal;
-    days.push({trades:[...dayTrades], startBal:dayStartBal, endBal:bal, dayPnl, status:status||'normal'});
-    dayTrades=[];
-    dayStartBal=bal;
-    dayLossAmt=0;
+    const dayPnl=bal-dayStartBal;
+    days.push({trades:[...dayTrades],startBal:dayStartBal,endBal:bal,dayPnl,status:status||'normal'});
+    dayTrades=[];dayStartBal=bal;dayLossAmt=0;
   }
 
   for(let i=0;i<sequence.length;i++){
-    const isWin = sequence[i]==='W';
-    if(isWin){
-      const profit = bal*winPct/100;
-      bal += profit;
-      dayTrades.push({t:'W', delta:profit, balAfter:bal});
-      totalW++;
+    const isW=sequence[i]==='W';
+    if(isW){
+      const profit=bal*winPct/100;
+      bal+=profit;dayTrades.push({t:'W',delta:profit,balAfter:bal});totalW++;
       if(bal>=target){flushDay('passed');passed=true;break}
     } else {
-      const potLoss = bal*lossPct/100;
-      const newDayLoss = dayLossAmt + potLoss;
-      const newDayLossPct = newDayLoss / dayStartBal * 100;
-      if(newDayLossPct > ddDay){
-        dayTrades.push({t:'BLOCKED', note:'дневной DD исчерпан'});
-        totalBlocked++;
-        flushDay('dd_limit');
-        continue;
+      const potLoss=bal*lossPct/100;
+      const newDayLoss=dayLossAmt+potLoss;
+      if(newDayLoss/dayStartBal*100>ddDay){
+        dayTrades.push({t:'BLOCKED'});totalBlocked++;flushDay('dd_limit');continue;
       }
-      bal -= potLoss;
-      dayLossAmt += potLoss;
-      dayTrades.push({t:'L', delta:-potLoss, balAfter:bal});
-      totalL++;
+      bal-=potLoss;dayLossAmt+=potLoss;
+      dayTrades.push({t:'L',delta:-potLoss,balAfter:bal});totalL++;
       if(bal<=ddAbs){flushDay('blown');blown=true;break}
     }
-    if(i===sequence.length-1) flushDay('normal');
+    if(i===sequence.length-1)flushDay('normal');
   }
 
-  const ddUsed = (bal0-bal)/bal0*100;
-  const progress = Math.min(100,Math.max(0,(bal-bal0)/(target-bal0)*100));
+  const ddUsed=(bal0-bal)/bal0*100;
+  const progress=Math.min(100,Math.max(0,(bal-bal0)/(target-bal0)*100));
+  const statusLabel=passed?t('funded'):blown?t('blown'):t('in-progress');
+  const statusCls=passed?'g':blown?'r':'b';
+  const cardCls=passed?'c-green':blown?'c-red':'';
 
-  // STATS
-  const statusLabel = passed?'FUNDED':blown?'BLOWN':'В процессе';
-  const statusCls = passed?'g':blown?'r':'b';
-  const cardCls = passed?'c-green':blown?'c-red':'';
   $('stats').innerHTML=[
-    {label:'Баланс',val:fmtMoney(bal),cls:bal>=target?'g':bal<ddAbs?'r':bal>=bal0?'g':'a',sub:fmtPct((bal-bal0)/bal0*100),card:cardCls},
-    {label:'Статус',val:statusLabel,cls:statusCls,sub:passed?'за '+days.length+' дн':blown?'blown на дне '+days.length:days.length+' дней',card:cardCls},
-    {label:'Побед / Потерь',val:totalW+' / '+totalL,cls:'b',sub:'WR '+(totalW+totalL>0?Math.round(totalW/(totalW+totalL)*100):0)+'%',card:''},
-    {label:'Общий DD',val:ddUsed.toFixed(2)+'%',cls:ddUsed>6?'r':ddUsed>4?'a':'g',sub:'лимит '+(100-ddAbs/bal0*100).toFixed(1)+'%',card:ddUsed>(100-ddAbs/bal0*100)?'c-red':''},
-    {label:'До цели',val:bal>=target?'Пройдено':fmtMoney(target-bal),cls:bal>=target?'g':'b',sub:bal>=target?'':Math.ceil(Math.log(target/bal)/Math.log(1+winPct/100))+' побед',card:''},
-    {label:'Блокировок DD',val:totalBlocked,cls:totalBlocked>0?'a':'b',sub:'сделок не взято',card:totalBlocked>0?'c-amber':''},
-  ].map(({label,val,cls,sub,card})=>`
-    <div class="scard ${card}">
-      <div class="slabel">${label}</div>
-      <div class="sval ${cls}">${val}</div>
-      <div class="ssub">${sub}</div>
-    </div>`).join('');
+    {label:lang==='ru'?'Баланс':'Balance',val:fmtMoney(bal),cls:bal>=target?'g':bal<ddAbs?'r':bal>=bal0?'g':'a',sub:fmtPct((bal-bal0)/bal0*100),card:cardCls},
+    {label:lang==='ru'?'Статус':'Status',val:statusLabel,cls:statusCls,sub:passed?days.length+' '+t('days'):blown?t('blown-on')+' '+days.length:days.length+' '+t('days-label'),card:cardCls},
+    {label:lang==='ru'?'Побед/Потерь':'W/L',val:totalW+'/'+totalL,cls:'b',sub:'WR '+(totalW+totalL>0?Math.round(totalW/(totalW+totalL)*100):0)+'%',card:''},
+    {label:lang==='ru'?'Общий DD':'Total DD',val:ddUsed.toFixed(2)+'%',cls:ddUsed>(100-ddAbs/bal0*100)?'r':ddUsed>4?'a':'g',sub:(lang==='ru'?'лимит':'limit')+' '+(100-ddAbs/bal0*100).toFixed(1)+'%',card:ddUsed>(100-ddAbs/bal0*100)?'c-red':''},
+    {label:lang==='ru'?'До цели':'To Target',val:bal>=target?t('funded'):fmtMoney(target-bal),cls:bal>=target?'g':'b',sub:bal>=target?'':Math.ceil(Math.log(target/bal)/Math.log(1+winPct/100))+' '+t('wins-left'),card:''},
+    {label:lang==='ru'?'Блокировок':'Blocked',val:totalBlocked,cls:totalBlocked>0?'a':'b',sub:t('blocked-msg'),card:totalBlocked>0?'c-amber':''},
+  ].map(({label,val,cls,sub,card})=>`<div class="scard ${card}"><div class="sc-label">${label}</div><div class="sc-val ${cls}">${val}</div><div class="sc-sub">${sub}</div></div>`).join('');
 
-  // PROGRESS
   if(sequence.length>0){
     $('prog-wrap').style.display='';
     $('prog-left').textContent=fmtMoney(bal0);
@@ -406,88 +590,81 @@ function update(){
     const fill=$('prog-fill');
     fill.style.width=progress+'%';
     fill.style.background=passed?'var(--green)':blown?'var(--red)':progress>60?'#2a9d6f':'var(--blue)';
-  } else {
-    $('prog-wrap').style.display='none';
-  }
+  } else $('prog-wrap').style.display='none';
 
-  // ALERTS
   let alerts='';
-  if(lossPct>ddDay) alerts+=`<div class="alert danger"><span class="alert-icon">⚠</span>Риск ${lossPct.toFixed(1)}% превышает дневной DD ${ddDay}% — все потери блокируются.</div>`;
-  else if(maxPerDay<2) alerts+=`<div class="alert warn"><span class="alert-icon">!</span>При риске ${lossPct.toFixed(1)}% и дневном DD ${ddDay}% — только ${maxPerDay} потеря в день.</div>`;
-  if(ddUsed>(100-ddAbs/bal0*100)&&!blown) alerts+=`<div class="alert danger"><span class="alert-icon">⚠</span>Общий DD ${ddUsed.toFixed(1)}% превысил лимит — аккаунт blown.</div>`;
-  else if((bal-ddAbs)<bal0*0.02&&!passed) alerts+=`<div class="alert warn"><span class="alert-icon">!</span>До мин баланса ${fmtMoney(ddAbs)} осталось ${fmtMoney(bal-ddAbs)}.</div>`;
-  if(totalBlocked>0) alerts+=`<div class="alert warn"><span class="alert-icon">!</span>${totalBlocked} сделок заблокировано дневным DD.</div>`;
+  if(lossPct>ddDay) alerts+=`<div class="alert danger"><span class="alert-icon">⚠</span>${lang==='ru'?'Риск':'Risk'} ${lossPct.toFixed(1)}% ${lang==='ru'?'превышает дневной DD':'exceeds daily DD'} ${ddDay}%</div>`;
+  else if(maxPerDay<2) alerts+=`<div class="alert warn"><span class="alert-icon">!</span>${lang==='ru'?'Только':'Only'} ${maxPerDay} ${lang==='ru'?'потеря в день при текущем риске':'loss per day at current risk'}</div>`;
+  if(ddUsed>(100-ddAbs/bal0*100)&&!blown) alerts+=`<div class="alert danger"><span class="alert-icon">⚠</span>${lang==='ru'?'Общий DD превышен':'Total DD exceeded'}</div>`;
+  if((bal-ddAbs)<bal0*0.015&&!passed&&!blown&&sequence.length>0) alerts+=`<div class="alert warn"><span class="alert-icon">!</span>${lang==='ru'?'До мин баланса осталось':'Distance to min balance'}: ${fmtMoney(bal-ddAbs)}</div>`;
+  if(totalBlocked>0) alerts+=`<div class="alert warn"><span class="alert-icon">!</span>${totalBlocked} ${t('blocked-msg')}</div>`;
   if(!blown&&!passed&&sequence.length>0){
     const wl=Math.ceil(Math.log(target/bal)/Math.log(1+winPct/100));
-    alerts+=`<div class="alert info"><span class="alert-icon">i</span>Ещё ${wl} ${wl===1?'победа':wl<5?'победы':'побед'} для прохождения.</div>`;
+    alerts+=`<div class="alert info"><span class="alert-icon">i</span>${lang==='ru'?'Нужно ещё':'Need'} ${wl} ${t('wins-left')}</div>`;
   }
   $('alerts').innerHTML=alerts;
 
-  // DAY TABLE
+  // day table
+  const thDay=lang==='ru'?'День':'Day';
+  const thTrades=lang==='ru'?'Сделки':'Trades';
+  const thStart=lang==='ru'?'Баланс начало':'Start Balance';
+  const thPnl='P&L';
+  const thDayDD=lang==='ru'?'DD дня':'Day DD';
+  const thEnd=lang==='ru'?'Баланс конец':'End Balance';
+  const thGDD=lang==='ru'?'Общий DD':'Total DD';
+  const thStatus=lang==='ru'?'Статус':'Status';
+
   if(days.length===0){
-    $('day-wrap').innerHTML='<div class="empty-state"><div class="empty-icon">📊</div>Добавь сделки слева чтобы запустить симуляцию</div>';
+    $('day-wrap').innerHTML=`<div class="empty-state"><div class="empty-icon">📊</div>${t('add-trades')}</div>`;
   } else {
     let rows='';
     days.forEach((d,i)=>{
       const rowCls=d.status==='passed'?'rpass':d.status==='blown'?'rblown':d.status==='dd_limit'?'rlimit':'';
-      const dayDDpct=d.dayPnl<0?(-d.dayPnl/d.startBal*100):0;
-      const dayDDlim=ddDay;
-      const globalDD=(bal0-d.endBal)/bal0*100;
-      const globalDDlim=100-ddAbs/bal0*100;
-
-      const tradesHtml=d.trades.map(t=>{
-        if(t.t==='W') return `<span class="badge bw">W +${winPct.toFixed(1)}%</span>`;
-        if(t.t==='L') return `<span class="badge bl">L −${lossPct.toFixed(1)}%</span>`;
-        return `<span class="badge blocked">⛔ DD лимит</span>`;
+      const ddPctDay=d.dayPnl<0?(-d.dayPnl/d.startBal*100):0;
+      const gDD=(bal0-d.endBal)/bal0*100;
+      const gDDlim=100-ddAbs/bal0*100;
+      const tr=d.trades.map(tt=>{
+        if(tt.t==='W') return `<span class="badge bw">W +${winPct.toFixed(1)}%</span>`;
+        if(tt.t==='L') return `<span class="badge bl">L −${lossPct.toFixed(1)}%</span>`;
+        return `<span class="badge blocked">⛔ ${t('dd-limit-msg')}</span>`;
       }).join(' ');
-
       let sb='';
-      if(d.status==='passed') sb='<span class="badge funded">FUNDED ✓</span>';
-      else if(d.status==='blown') sb='<span class="badge blown">BLOWN ✗</span>';
-      else if(d.status==='dd_limit') sb='<span class="badge neutral">DD стоп</span>';
-
-      const pnlClr=d.dayPnl>=0?'color:var(--green)':'color:var(--red)';
-      const dayDDClr=dayDDpct>dayDDlim*0.85?'color:var(--red)':dayDDpct>dayDDlim*0.5?'color:var(--amber)':'color:var(--text2)';
-      const gddClr=globalDD>globalDDlim?'color:var(--red)':globalDD>globalDDlim*0.75?'color:var(--amber)':'color:var(--text2)';
-
+      if(d.status==='passed') sb=`<span class="badge funded">${t('funded')} ✓</span>`;
+      else if(d.status==='blown') sb=`<span class="badge blown">${t('blown')} ✗</span>`;
+      else if(d.status==='dd_limit') sb=`<span class="badge neutral">DD</span>`;
+      const pClr=d.dayPnl>=0?'color:var(--green)':'color:var(--red)';
+      const dClr=ddPctDay>ddDay*.85?'color:var(--red)':ddPctDay>ddDay*.5?'color:var(--amber)':'color:var(--text2)';
+      const gClr=gDD>gDDlim?'color:var(--red)':gDD>gDDlim*.75?'color:var(--amber)':'color:var(--text2)';
       rows+=`<tr class="${rowCls}">
         <td class="mono" style="color:var(--text3)">${i+1}</td>
-        <td>${tradesHtml}</td>
+        <td>${tr}</td>
         <td class="mono">${fmtMoney(d.startBal)}</td>
-        <td class="r mono" style="${pnlClr}">${fmtPct(d.dayPnl/d.startBal*100)}</td>
-        <td class="r mono" style="${dayDDClr}">${dayDDpct>0?dayDDpct.toFixed(2)+'%':'—'} <span style="color:var(--text3);font-size:10px">/ ${ddDay}%</span></td>
+        <td class="r mono" style="${pClr}">${fmtPct(d.dayPnl/d.startBal*100)}</td>
+        <td class="r mono" style="${dClr}">${ddPctDay>0?ddPctDay.toFixed(2)+'%':'—'}<span style="color:var(--text3);font-size:0.5625rem"> /${ddDay}%</span></td>
         <td class="r mono">${fmtMoney(d.endBal)}</td>
-        <td class="r mono" style="${gddClr}">${globalDD.toFixed(2)}% <span style="color:var(--text3);font-size:10px">/ ${globalDDlim.toFixed(1)}%</span></td>
+        <td class="r mono" style="${gClr}">${gDD.toFixed(2)}%<span style="color:var(--text3);font-size:0.5625rem"> /${gDDlim.toFixed(1)}%</span></td>
         <td>${sb}</td>
       </tr>`;
     });
-    $('day-wrap').innerHTML=`<table>
-      <thead><tr>
-        <th>День</th><th>Сделки</th>
-        <th>Баланс начало</th>
-        <th class="r">P&L дня</th>
-        <th class="r">DD дня (от баланса дня)</th>
-        <th class="r">Баланс конец</th>
-        <th class="r">Общий DD (от ${fmtMoney(bal0)})</th>
-        <th>Статус</th>
-      </tr></thead>
-      <tbody>${rows}</tbody>
-    </table>`;
+    $('day-wrap').innerHTML=`<table><thead><tr>
+      <th>${thDay}</th><th>${thTrades}</th><th>${thStart}</th>
+      <th class="r">${thPnl}</th><th class="r">${thDayDD}</th>
+      <th class="r">${thEnd}</th><th class="r">${thGDD}</th><th>${thStatus}</th>
+    </tr></thead><tbody>${rows}</tbody></table>`;
   }
 
-  // REF TABLE
+  // ref table
   const rrs=[0.5,1,1.5,2,3,4,5,6];
   let refRows='';
   rrs.forEach(r=>{
-    const wp=risk*r, lp=risk;
+    const wp=risk*r,lp=risk;
     const wn=Math.ceil(Math.log(target/bal0)/Math.log(1+wp/100));
     const lb=Math.floor(Math.log(ddAbs/bal0)/Math.log(1-lp/100));
     const md=Math.floor(ddDay/lp);
     const isCur=r===rr;
-    const rowCls=isCur?'rlimit':'';
-    const okClr=md>=2&&wn<=5?'color:var(--green)':md<1?'color:var(--red)':'color:var(--amber)';
-    const note=lp>ddDay?'риск > DD лимита':md>=2&&wn<=5?'оптимально':wn>12?'много сделок':'норм';
-    refRows+=`<tr class="${rowCls}">
+    const okClr=lp>ddDay?'color:var(--red)':md>=2&&wn<=6?'color:var(--green)':wn>12?'color:var(--amber)':'color:var(--text2)';
+    const note=lp>ddDay?t('note-risky'):md>=2&&wn<=6?t('note-optimal'):wn>12?t('note-many'):t('note-ok');
+    refRows+=`<tr class="${isCur?'rcur':''}">
       <td class="mono" style="${isCur?'color:var(--blue);font-weight:700':''}">${r}:1${isCur?' ←':''}</td>
       <td class="r mono">+${wp.toFixed(1)}%</td>
       <td class="r mono">${wn}</td>
@@ -499,9 +676,66 @@ function update(){
   $('ref-tbody').innerHTML=refRows;
 }
 
+// ===== POSITION CALC =====
+function calcPos(){
+  const bal=Math.max(100,+$('pos-balance').value||100000);
+  const risk=Math.max(0.01,+$('pos-risk').value||1.3);
+  const rr=Math.max(0.1,+$('pos-rr').value||3);
+  const entry=+$('pos-entry').value||0;
+
+  const slUsd=bal*risk/100;
+  const tpUsd=slUsd*rr;
+  const slPct=risk;
+  const tpPct=risk*rr;
+
+  $('res-sl-usd').textContent='−'+fmtMoney(slUsd);
+  $('res-sl-pct').textContent='−'+slPct.toFixed(2)+'%';
+  $('res-tp-usd').textContent='+'+fmtMoney(tpUsd);
+  $('res-tp-pct').textContent='+'+tpPct.toFixed(2)+'%';
+  $('met-rr').textContent=rr+':1';
+  $('met-risk').textContent=fmtMoney(slUsd);
+  $('met-profit').textContent=fmtMoney(tpUsd);
+
+  if(entry>0){
+    const slPrice=lang==='ru'?'Цена SL: ':'SL price: ';
+    const tpPrice=lang==='ru'?'Цена TP: ':'TP price: ';
+    $('res-sl-price').textContent=slPrice+(entry*(1-risk/100)).toFixed(5);
+    $('res-tp-price').textContent=tpPrice+(entry*(1+tpPct/100)).toFixed(5);
+  } else {
+    const na=lang==='ru'?'цена входа не указана':'entry price not set';
+    $('res-sl-price').textContent=na;
+    $('res-tp-price').textContent=na;
+  }
+
+  $('pos-hint').textContent=t('pos-hint-pre')+' '+fmtMoney(bal)+' '+t('pos-hint-mid')+' '+risk+'% — '+t('pos-hint-suf')+' '+fmtMoney(slUsd);
+
+  // scenarios table
+  const risks=[0.5,1,1.3,1.5,2,2.5,3];
+  let rows='';
+  risks.forEach(r=>{
+    const sl=bal*r/100;
+    const tp=sl*rr;
+    const isCur=Math.abs(r-risk)<0.05;
+    const slP=entry>0?(entry*(1-r/100)).toFixed(5):'—';
+    const tpP=entry>0?(entry*(1+r*rr/100)).toFixed(5):'—';
+    rows+=`<tr class="${isCur?'rcur':''}">
+      <td class="mono" style="${isCur?'color:var(--blue);font-weight:700':''}">${r}%${isCur?' ←':''}</td>
+      <td class="r mono" style="color:var(--red)">−${fmtMoney(sl)}</td>
+      <td class="r mono" style="color:var(--green)">+${fmtMoney(tp)}</td>
+      <td class="r mono">${slP}</td>
+      <td class="r mono">${tpP}</td>
+    </tr>`;
+  });
+  $('pos-scenarios').innerHTML=rows;
+}
+
+// ===== EVENTS =====
 ['balance','ddabs'].forEach(id=>$(id).addEventListener('input',update));
 ['goal','ddday','risk','rr'].forEach(id=>$(id).addEventListener('input',update));
+
+// init
 update();
+calcPos();
 </script>
 </body>
 </html>
