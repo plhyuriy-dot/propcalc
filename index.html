@@ -6,23 +6,23 @@
 <title>Prop Challenge Calculator</title>
 <style>
 :root {
-  --bg:#f7f8fa;--bg2:#ffffff;--bg3:#f0f2f6;--border:#e2e5ec;--border2:#c8cdd9;
-  --text:#1a1d26;--text2:#5a6177;--text3:#9aa0b4;
-  --green:#0c7a4e;--green-bg:#e6f7f0;--green-bd:#a3d9bf;
-  --red:#c0283c;--red-bg:#fdf0f2;--red-bd:#f0a8b2;
-  --amber:#a05c00;--amber-bg:#fdf5e6;--amber-bd:#f0cc80;
-  --blue:#1a5fbf;--blue-bg:#edf3fd;--blue-bd:#9dbcf0;
-  --shadow:0 1px 3px rgba(0,0,0,.08),0 0 0 1px rgba(0,0,0,.04);
-  --radius:10px;--fs:0.8125rem;
+  --bg:#e8ebf2;--bg2:#f4f5f9;--bg3:#dde0ea;--border:#c4cad8;--border2:#a8b0c4;
+  --text:#111420;--text2:#424860;--text3:#7880a0;
+  --green:#085c38;--green-bg:#c8eeda;--green-bd:#5cb890;
+  --red:#961828;--red-bg:#f8dde0;--red-bd:#d07080;
+  --amber:#7a4400;--amber-bg:#f5e4c0;--amber-bd:#c89040;
+  --blue:#1048a0;--blue-bg:#d4e4f8;--blue-bd:#6098d8;
+  --shadow:0 1px 4px rgba(0,0,0,.14),0 0 0 1px rgba(0,0,0,.07);
+  --radius:10px;--fs:13px;
 }
 body.dark {
-  --bg:#0f1117;--bg2:#161b27;--bg3:#1e2535;--border:#2a3348;--border2:#3a4560;
-  --text:#e8eaf0;--text2:#8892a4;--text3:#55627a;
-  --green:#00d48a;--green-bg:#0a2d1e;--green-bd:#1a6644;
-  --red:#ff4d6d;--red-bg:#2d0a10;--red-bd:#8b2030;
-  --amber:#f0a500;--amber-bg:#2d1f00;--amber-bd:#8a5a00;
-  --blue:#4d9fff;--blue-bg:#0a1e3d;--blue-bd:#1a4a8a;
-  --shadow:0 1px 3px rgba(0,0,0,.3);
+  --bg:#0e1c18;--bg2:#152820;--bg3:#1c3228;--border:#264038;--border2:#3a5a4a;
+  --text:#e8f4ee;--text2:#90b8a0;--text3:#507060;
+  --green:#00e090;--green-bg:#0e3024;--green-bd:#00a870;
+  --red:#ff6080;--red-bg:#2d1018;--red-bd:#cc3050;
+  --amber:#f0b000;--amber-bg:#2a2000;--amber-bd:#c08800;
+  --blue:#50a8f0;--blue-bg:#0c2030;--blue-bd:#1a5899;
+  --shadow:0 1px 4px rgba(0,0,0,.4);
 }
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:var(--bg);color:var(--text);font-family:-apple-system,'Inter',sans-serif;font-size:0.8125rem;line-height:1.5;transition:background .2s,color .2s;min-height:100vh}
@@ -190,6 +190,16 @@ td.mono{font-family:'JetBrains Mono','Courier New',monospace}
 ::-webkit-scrollbar{width:5px;height:5px}
 ::-webkit-scrollbar-track{background:var(--bg)}
 ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+
+.dir-toggle{display:flex;gap:6px;margin-bottom:16px}
+.dir-btn{flex:1;padding:12px 10px;font-size:0.875rem;font-weight:700;border:2px solid transparent;border-radius:10px;cursor:pointer;transition:all .18s;letter-spacing:.03em;background:var(--bg3);color:var(--text3);box-shadow:none}
+.dir-btn:hover:not(.active-long):not(.active-short){background:var(--bg2);color:var(--text2);border-color:var(--border2)}
+.dir-btn.active-long{background:#c8f0df;color:#085c34;border-color:#3db87a;box-shadow:0 2px 10px rgba(10,100,60,.2)}
+.dir-btn.active-short{background:#fcc8d0;color:#8a1525;border-color:#e0405a;box-shadow:0 2px 10px rgba(160,30,50,.2)}
+body.dark .dir-btn.active-long{background:#0a3a22;color:#00f0a0;border-color:#00d48a;box-shadow:0 2px 14px rgba(0,212,138,.3)}
+body.dark .dir-btn.active-short{background:#3a0a14;color:#ff6080;border-color:#ff4d6d;box-shadow:0 2px 14px rgba(255,77,109,.3)}
+body.dark .dir-btn:not(.active-long):not(.active-short){background:var(--bg3);color:var(--text3)}
+body.dark .dir-btn:hover:not(.active-long):not(.active-short){background:var(--bg2);color:var(--text2);border-color:var(--border2)}
 </style>
 </head>
 <body>
@@ -315,6 +325,10 @@ td.mono{font-family:'JetBrains Mono','Courier New',monospace}
 <div class="pos-layout">
   <div class="pos-card">
     <div class="pos-card-title">🎯 <span data-ru="Расчёт позиции" data-en="Position Calculator">Расчёт позиции</span></div>
+    <div class="dir-toggle">
+      <button class="dir-btn active-long" id="btn-long" onclick="setDir('long')">▲ LONG</button>
+      <button class="dir-btn" id="btn-short" onclick="setDir('short')">▼ SHORT</button>
+    </div>
     <div class="pos-grid">
       <div class="pos-field">
         <label class="pos-label" data-ru="Баланс счёта" data-en="Account Balance">Баланс счёта</label>
