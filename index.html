@@ -694,16 +694,30 @@ function update(){
 }
 
 // ===== POSITION CALC =====
+let posDir='long';
+function setDir(dir){
+  posDir=dir;
+  $('btn-long').className='dir-btn'+(dir==='long'?' active-long':'');
+  $('btn-short').className='dir-btn'+(dir==='short'?' active-short':'');
+  calcPos();
+}
+
 function calcPos(){
   const bal=Math.max(100,+$('pos-balance').value||100000);
   const risk=Math.max(0.01,+$('pos-risk').value||1.3);
   const rr=Math.max(0.1,+$('pos-rr').value||3);
   const entry=+$('pos-entry').value||0;
+  const isLong=posDir==='long';
 
   const slUsd=bal*risk/100;
   const tpUsd=slUsd*rr;
   const slPct=risk;
   const tpPct=risk*rr;
+
+  // Direction label
+  const dirLabel=isLong?(lang==='ru'?'▲ LONG':'▲ LONG'):(lang==='ru'?'▼ SHORT':'▼ SHORT');
+  const slLabel=isLong?(lang==='ru'?'Stop Loss (SL) — ниже входа':'Stop Loss (SL) — below entry'):(lang==='ru'?'Stop Loss (SL) — выше входа':'Stop Loss (SL) — above entry');
+  const tpLabel=isLong?(lang==='ru'?'Take Profit (TP) — выше входа':'Take Profit (TP) — above entry'):(lang==='ru'?'Take Profit (TP) — ниже входа':'Take Profit (TP) — below entry');
 
   $('res-sl-usd').textContent='−'+fmtMoney(slUsd);
   $('res-sl-pct').textContent='−'+slPct.toFixed(2)+'%';
@@ -713,28 +727,48 @@ function calcPos(){
   $('met-risk').textContent=fmtMoney(slUsd);
   $('met-profit').textContent=fmtMoney(tpUsd);
 
+  // Direction-aware price levels
   if(entry>0){
-    const slPrice=lang==='ru'?'Цена SL: ':'SL price: ';
-    const tpPrice=lang==='ru'?'Цена TP: ':'TP price: ';
-    $('res-sl-price').textContent=slPrice+(entry*(1-risk/100)).toFixed(5);
-    $('res-tp-price').textContent=tpPrice+(entry*(1+tpPct/100)).toFixed(5);
+    let slPrice, tpPrice;
+    if(isLong){
+      // Long: SL below entry, TP above entry
+      slPrice=entry*(1-slPct/100);
+      tpPrice=entry*(1+tpPct/100);
+    } else {
+      // Short: SL above entry, TP below entry
+      slPrice=entry*(1+slPct/100);
+      tpPrice=entry*(1-tpPct/100);
+    }
+    const slLbl=lang==='ru'?'Цена SL: ':'SL price: ';
+    const tpLbl=lang==='ru'?'Цена TP: ':'TP price: ';
+    $('res-sl-price').textContent=slLbl+slPrice.toFixed(5);
+    $('res-tp-price').textContent=tpLbl+tpPrice.toFixed(5);
   } else {
-    const na=lang==='ru'?'цена входа не указана':'entry price not set';
+    const na=lang==='ru'?'укажи цену входа':'enter entry price';
     $('res-sl-price').textContent=na;
     $('res-tp-price').textContent=na;
   }
 
-  $('pos-hint').textContent=t('pos-hint-pre')+' '+fmtMoney(bal)+' '+t('pos-hint-mid')+' '+risk+'% — '+t('pos-hint-suf')+' '+fmtMoney(slUsd);
+  const dirHint=isLong?(lang==='ru'?'Лонг: SL ниже входа, TP выше':'Long: SL below entry, TP above'):(lang==='ru'?'Шорт: SL выше входа, TP ниже':'Short: SL above entry, TP below');
+  $('pos-hint').textContent=dirHint+' | '+t('pos-hint-pre')+' '+fmtMoney(bal)+' '+t('pos-hint-mid')+' '+risk+'% — '+t('pos-hint-suf')+' '+fmtMoney(slUsd);
 
-  // scenarios table
+  // Scenarios table
   const risks=[0.5,1,1.3,1.5,2,2.5,3];
   let rows='';
   risks.forEach(r=>{
     const sl=bal*r/100;
     const tp=sl*rr;
     const isCur=Math.abs(r-risk)<0.05;
-    const slP=entry>0?(entry*(1-r/100)).toFixed(5):'—';
-    const tpP=entry>0?(entry*(1+r*rr/100)).toFixed(5):'—';
+    let slP='—', tpP='—';
+    if(entry>0){
+      if(isLong){
+        slP=(entry*(1-r/100)).toFixed(5);
+        tpP=(entry*(1+r*rr/100)).toFixed(5);
+      } else {
+        slP=(entry*(1+r/100)).toFixed(5);
+        tpP=(entry*(1-r*rr/100)).toFixed(5);
+      }
+    }
     rows+=`<tr class="${isCur?'rcur':''}">
       <td class="mono" style="${isCur?'color:var(--blue);font-weight:700':''}">${r}%${isCur?' ←':''}</td>
       <td class="r mono" style="color:var(--red)">−${fmtMoney(sl)}</td>
