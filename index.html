@@ -424,7 +424,7 @@ const T={
     'pos-hint-pre':'При балансе',
     'pos-hint-mid':'и риске',
     'pos-hint-suf':'% — максимальный убыток:',
-    'dd-limit-msg':'лимит исчерпан',
+    'dd-limit-msg':'блок торговли',
     'goal-hint-pre':'цель:',
     'wins-needed':'побед',
     'note-optimal':'оптимально',
@@ -453,7 +453,7 @@ const T={
     'pos-hint-pre':'Balance',
     'pos-hint-mid':'risk',
     'pos-hint-suf':'% — max loss:',
-    'dd-limit-msg':'limit reached',
+    'dd-limit-msg':'trading blocked',
     'goal-hint-pre':'target:',
     'wins-needed':'wins',
     'note-optimal':'optimal',
@@ -550,19 +550,35 @@ function update(){
 
   for(let i=0;i<sequence.length;i++){
     const isW=sequence[i]==='W';
+    const potLoss=bal*lossPct/100;
+
+    // PRE-CHECK: before ANY trade, check if next loss would exceed daily DD
+    // If yes — block this trade and end the day regardless of W or L
+    const afterLossDayPct=(dayLossAmt+potLoss)/dayStartBal*100;
+    if(afterLossDayPct>ddDay){
+      dayTrades.push({t:'BLOCKED',reason:'daily'});
+      totalBlocked++;
+      flushDay('dd_limit');
+      continue;
+    }
+
     if(isW){
       const profit=bal*winPct/100;
       bal+=profit;dayTrades.push({t:'W',delta:profit,balAfter:bal});totalW++;
       if(bal>=target){flushDay('passed');passed=true;break}
     } else {
-      const potLoss=bal*lossPct/100;
-      const newDayLoss=dayLossAmt+potLoss;
-      if(newDayLoss/dayStartBal*100>ddDay){
-        dayTrades.push({t:'BLOCKED'});totalBlocked++;flushDay('dd_limit');continue;
-      }
       bal-=potLoss;dayLossAmt+=potLoss;
       dayTrades.push({t:'L',delta:-potLoss,balAfter:bal});totalL++;
       if(bal<=ddAbs){flushDay('blown');blown=true;break}
+      // POST-LOSS CHECK: if next loss would exceed daily DD — block immediately
+      const nextLoss=bal*lossPct/100;
+      const nextDayLossPct=(dayLossAmt+nextLoss)/dayStartBal*100;
+      if(nextDayLossPct>ddDay){
+        dayTrades.push({t:'BLOCKED',reason:'daily'});
+        totalBlocked++;
+        flushDay('dd_limit');
+        continue;
+      }
     }
     if(i===sequence.length-1)flushDay('normal');
   }
@@ -626,12 +642,13 @@ function update(){
       const tr=d.trades.map(tt=>{
         if(tt.t==='W') return `<span class="badge bw">W +${winPct.toFixed(1)}%</span>`;
         if(tt.t==='L') return `<span class="badge bl">L −${lossPct.toFixed(1)}%</span>`;
-        return `<span class="badge blocked">⛔ ${t('dd-limit-msg')}</span>`;
+        if(tt.t==='BLOCKED') return `<span class="badge blocked">🚫 ${lang==='ru'?'блок торговли':'trading blocked'}</span>`;
+        return '';
       }).join(' ');
       let sb='';
       if(d.status==='passed') sb=`<span class="badge funded">${t('funded')} ✓</span>`;
       else if(d.status==='blown') sb=`<span class="badge blown">${t('blown')} ✗</span>`;
-      else if(d.status==='dd_limit') sb=`<span class="badge neutral">DD</span>`;
+      else if(d.status==='dd_limit') sb=`<span class="badge blocked">${lang==='ru'?'блок торговли':'trading blocked'}</span>`;
       const pClr=d.dayPnl>=0?'color:var(--green)':'color:var(--red)';
       const dClr=ddPctDay>ddDay*.85?'color:var(--red)':ddPctDay>ddDay*.5?'color:var(--amber)':'color:var(--text2)';
       const gClr=gDD>gDDlim?'color:var(--red)':gDD>gDDlim*.75?'color:var(--amber)':'color:var(--text2)';
